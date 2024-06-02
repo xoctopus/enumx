@@ -11,8 +11,8 @@ xgo:
 tidy:
 	go mod tidy
 
-cover: xgo tidy
-	xgo test -failfast ${PACKAGES} -coverprofile=cover.out -covermode=count
+cover: tidy
+	go test -failfast ${PACKAGES} -coverprofile=cover.out -covermode=count
 
 
 test: tidy
