@@ -1,13 +1,21 @@
 module github.com/xoctopus/enumx
 
-go 1.22.0
+go 1.25.1
 
-require github.com/onsi/gomega v1.33.1
+tool github.com/xoctopus/enumx/example/cmd/example
 
 require (
-	github.com/google/go-cmp v0.6.0 // indirect
-	golang.org/x/net v0.25.0 // indirect
-	golang.org/x/text v0.15.0 // indirect
-	golang.org/x/tools v0.21.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
+	github.com/pkg/errors v0.9.1
+	github.com/xoctopus/genx v0.0.0-20251017172108-f2173c3e59e7
+	github.com/xoctopus/pkgx v0.0.0-20251016074410-a511df1aef70
+	github.com/xoctopus/x v0.1.3-0.20251016125604-a5b9f79d8d26
+)
+
+require (
+	github.com/google/go-cmp v0.7.0 // indirect
+	github.com/xoctopus/typex v0.1.3-0.20251013043517-cde6be6c66a0 // indirect
+	golang.org/x/exp v0.0.0-20251009144603-d2f985daa21b // indirect
+	golang.org/x/mod v0.29.0 // indirect
+	golang.org/x/sync v0.17.0 // indirect
+	golang.org/x/tools v0.38.0 // indirect
 )

@@ -4,18 +4,19 @@ import (
 	"reflect"
 	"testing"
 
-	. "github.com/onsi/gomega"
+	. "github.com/xoctopus/x/testx"
 
-	"github.com/xoctopus/enumx"
+	"github.com/xoctopus/enumx/pkg/enumx"
+	"github.com/xoctopus/enumx/testdata"
 )
 
 func TestScan(t *testing.T) {
-	tests := []struct {
-		name    string
-		src     any
-		offset  int
-		want    int
-		wantErr bool
+	cases := []struct {
+		name   string
+		src    any
+		offset int
+		expect int
+		failed bool
 	}{
 		{"ParseBytes", []byte("100"), 10, 90, false},
 		{"ParseBytesFailed", []byte("xxx"), 11, 11, true},
@@ -36,16 +37,20 @@ func TestScan(t *testing.T) {
 		{"Nil", nil, 10, 0, false},
 		{"OtherType", reflect.ValueOf(10), 0, 0, false},
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := enumx.Scan(tt.src, tt.offset)
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			got, err := enumx.Scan(c.src, c.offset)
 			if err == nil {
-				NewWithT(t).Expect(got).To(Equal(tt.want))
-				NewWithT(t).Expect(tt.wantErr).To(BeFalse())
+				Expect(t, got, Equal(c.expect))
+				Expect(t, c.failed, BeFalse())
 			} else {
-				NewWithT(t).Expect(got).To(Equal(tt.offset))
-				NewWithT(t).Expect(tt.wantErr).To(BeTrue())
+				Expect(t, got, Equal(c.offset))
+				Expect(t, c.failed, BeTrue())
 			}
 		})
 	}
+}
+
+func TestParseErrorFor(t *testing.T) {
+	_ = enumx.ParseErrorFor[testdata.Gender]("any")
 }
