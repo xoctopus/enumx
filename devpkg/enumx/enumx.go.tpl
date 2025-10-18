@@ -1,10 +1,10 @@
 @def Type
-@def AssertEnumType
+@def EnumerationType
 --Assertion
-var _ #AssertEnumType# = (*#Type#)(nil)
+var _ #EnumerationType# = (*#Type#)(nil)
 
 @def Type
-@def NameToValueCases
+@def StringToValueCases
 @def fmt.Sscanf
 @def UnknownValue
 @def github.com/xoctopus/enumx/pkg/enumx.ParseErrorFor
@@ -12,7 +12,7 @@ var _ #AssertEnumType# = (*#Type#)(nil)
 // Parse#Type# parse #Type# from key
 func Parse#Type#(key string) (#Type#, error) {
 	switch key {
-	#NameToValueCases#
+	#StringToValueCases#
 	default:
 		var v #Type#
 		if _, err := #fmt.Sscanf#(key, "UNKNOWN_%d", &v); err != nil {
@@ -34,23 +34,24 @@ func (#Type#) Values() []#Type# {
 
 @def Type
 @def fmt.Sprintf
+@def ValueToStringCases
 --String
 // String returns v's string as key
 func (v #Type#) String() string {
 	switch v {
-	#ValueToNameCases#
+	#ValueToStringCases#
 	default:
 		return #fmt.Sprintf#("UNKNOWN_%d", v)
 	}
 }
 
 @def Type
-@def ValueToDescCases
+@def ValueToTextCases
 --Text
 // Text returns the description as for human reading
 func (v #Type#) Text() string {
 	switch v {
-	#ValueToDescCases#
+	#ValueToTextCases#
 	default:
 		return v.String()
 	}

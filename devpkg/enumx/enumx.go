@@ -1,11 +1,13 @@
 package enumx
 
 import (
+	"context"
 	"go/constant"
 	"go/types"
 	"strings"
 
 	"github.com/xoctopus/genx"
+	s "github.com/xoctopus/genx/snippet"
 	"github.com/xoctopus/pkgx"
 	"github.com/xoctopus/x/stringsx"
 )
@@ -42,6 +44,71 @@ func (e *Enum) add(c *pkgx.Constant) {
 	if len(parts) == 2 && parts[0] == prefix {
 		e.values = append(e.values, c)
 	}
+}
+
+// Values generates code snippet of const value list
+func (e *Enum) Values(ctx context.Context) s.Snippet {
+	ss := make([]s.Snippet, 0)
+	for _, v := range e.values {
+		expose := s.ExposeObject(ctx, v.Exposer())
+		ss = append(
+			ss,
+			s.Compose(s.Indent(2), expose, s.Block(",")),
+		)
+	}
+	return s.Snippets(s.NewLine(1), ss...)
+}
+
+// ValueToStringCases generates code snippet cases from enum value to string
+func (e *Enum) ValueToStringCases(ctx context.Context) s.Snippet {
+	ss := make([]s.Snippet, 0)
+	for _, v := range e.values {
+		name := strings.TrimPrefix(
+			v.Name(),
+			stringsx.UpperSnakeCase(v.TypeName())+"__",
+		)
+		expose := s.ExposeObject(ctx, v.Exposer())
+		ss = append(
+			ss,
+			s.Compose(s.Indent(1), s.Block("case "), expose, s.Block(":")),
+			s.Compose(s.Indent(2), s.BlockF("return %q", name)),
+		)
+	}
+	return s.Snippets(s.NewLine(1), ss...)
+}
+
+// StringToValueCases generates code snippet cases from string to const value
+func (e *Enum) StringToValueCases(ctx context.Context) s.Snippet {
+	ss := make([]s.Snippet, 0)
+	for _, v := range e.values {
+		name := strings.TrimPrefix(
+			v.Name(),
+			stringsx.UpperSnakeCase(v.TypeName())+"__",
+		)
+		expose := s.ExposeObject(ctx, v.Exposer())
+		ss = append(
+			ss,
+			s.Compose(s.Indent(1), s.BlockF("case %q:", name)),
+			s.Compose(s.Indent(2), s.Block("return "), expose, s.Block(", nil")),
+		)
+	}
+	return s.Snippets(s.NewLine(1), ss...)
+}
+
+// ValueToTextCases generates code snippet cases from enum value to text
+func (e *Enum) ValueToTextCases(ctx context.Context) s.Snippet {
+	ss := make([]s.Snippet, 0)
+	for _, v := range e.values {
+		text := strings.Join(v.Doc().Desc(), " ")
+		expose := s.ExposeObject(ctx, v.Exposer())
+		ss = append(
+			ss,
+			s.Compose(s.Indent(1), s.Block("case "), expose, s.Block(":")),
+			s.Compose(s.Indent(2), s.BlockF("return %q", text)),
+		)
+	}
+	return s.Snippets(s.NewLine(1), ss...)
+
 }
 
 func NewEnums(g genx.Context) *Enums {
