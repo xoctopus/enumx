@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/xoctopus/genx"
+	"github.com/xoctopus/genx/pkg/genx"
 	"github.com/xoctopus/x/misc/must"
 
 	_ "github.com/xoctopus/enumx/devpkg/enumx"

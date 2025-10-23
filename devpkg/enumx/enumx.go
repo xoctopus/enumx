@@ -6,8 +6,8 @@ import (
 	"go/types"
 	"strings"
 
-	"github.com/xoctopus/genx"
-	s "github.com/xoctopus/genx/snippet"
+	"github.com/xoctopus/genx/pkg/genx"
+	s "github.com/xoctopus/genx/pkg/snippet"
 	"github.com/xoctopus/pkgx"
 	"github.com/xoctopus/x/stringsx"
 )
@@ -144,7 +144,7 @@ type Enums struct {
 	e map[types.Type]*Enum
 }
 
-func (es Enums) Resolve(t types.Type) (*Enum, bool) {
+func (es *Enums) Resolve(t types.Type) (*Enum, bool) {
 	if _, ok := t.(*types.Named); !ok {
 		return nil, false
 	}

@@ -6,8 +6,8 @@ import (
 	_ "embed"
 	"go/types"
 
-	"github.com/xoctopus/genx"
-	s "github.com/xoctopus/genx/snippet"
+	"github.com/xoctopus/genx/pkg/genx"
+	s "github.com/xoctopus/genx/pkg/snippet"
 
 	"github.com/xoctopus/enumx/pkg/enumx"
 )
