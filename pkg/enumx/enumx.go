@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"encoding"
+	"fmt"
 	"reflect"
 	"strconv"
 
@@ -69,5 +70,18 @@ func Scan(src any, offset int) (int, error) {
 }
 
 func ParseErrorFor[E _Int](from string) error {
-	return errors.Errorf("failed to parse `%s` to %s", from, reflect.TypeFor[E]())
+	return &ParseError[E]{from: from}
+}
+
+type ParseError[E _Int] struct {
+	from string
+}
+
+func (e *ParseError[E]) Error() string {
+	return fmt.Sprintf("failed to parse `%s` to %s", e.from, reflect.TypeFor[E]())
+}
+
+func (e *ParseError[E]) Is(err error) bool {
+	var target *ParseError[E]
+	return errors.As(err, &target)
 }

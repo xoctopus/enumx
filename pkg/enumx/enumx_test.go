@@ -1,6 +1,7 @@
 package enumx_test
 
 import (
+	"errors"
 	"reflect"
 	"testing"
 
@@ -52,10 +53,13 @@ func TestScan(t *testing.T) {
 }
 
 func TestParseErrorFor(t *testing.T) {
-	_ = enumx.ParseErrorFor[testdata.Gender]("any")
-	b := []byte("123")
-	s := "123"
+	err := enumx.ParseErrorFor[testdata.Gender]("any")
 
-	t.Log(reflect.ValueOf(b).Bytes())
-	t.Log(reflect.ValueOf(s).String())
+	target := enumx.ParseErrorFor[int]("some other")
+	Expect(t, errors.Is(target, err), BeFalse())
+
+	target = enumx.ParseErrorFor[testdata.Gender]("some other")
+	Expect(t, errors.Is(target, err), BeTrue())
+
+	Expect(t, target.Error(), NotEqual(err.Error()))
 }
