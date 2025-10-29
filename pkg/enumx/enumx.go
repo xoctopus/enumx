@@ -59,26 +59,10 @@ func Scan(src any, offset int) (int, error) {
 			return offset, err
 		}
 		return int(i) - offset, nil
-	case int:
-		return v - offset, nil
-	case int8:
-		return int(v) - offset, nil
-	case int16:
-		return int(v) - offset, nil
-	case int32:
-		return int(v) - offset, nil
-	case int64:
-		return int(v) - offset, nil
-	case uint:
-		return int(v) - offset, nil
-	case uint8:
-		return int(v) - offset, nil
-	case uint16:
-		return int(v) - offset, nil
-	case uint32:
-		return int(v) - offset, nil
-	case uint64:
-		return int(v) - offset, nil
+	case int, int8, int16, int32, int64:
+		return int(reflect.ValueOf(v).Int()) - offset, nil
+	case uint, uint8, uint16, uint32, uint64:
+		return int(reflect.ValueOf(v).Uint()) - offset, nil
 	default:
 		return offset - offset, nil
 	}

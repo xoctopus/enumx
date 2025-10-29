@@ -5,6 +5,7 @@ import (
 	"database/sql/driver"
 	_ "embed"
 	"go/types"
+	"strings"
 
 	"github.com/xoctopus/genx/pkg/genx"
 	s "github.com/xoctopus/genx/pkg/snippet"
@@ -79,6 +80,13 @@ func (x *g) generate(c genx.Context, e *Enum) {
 		// @def ValueToNameCases
 		s.Arg(ctx, "ValueToStringCases", e.ValueToStringCases(ctx)),
 	}
+	ss := []s.Snippet{s.Template(bytes.NewReader(template), args...)}
 
-	c.Render(s.Template(bytes.NewReader(template), args...))
+	for _, attr := range e.Attrs() {
+		if v := strings.ToLower(attr); v != "text" && v != "string" {
+			ss = append(ss, e.Attr(ctx, attr))
+		}
+	}
+
+	c.Render(s.Snippets(s.NewLine(1), ss...))
 }

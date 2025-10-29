@@ -53,7 +53,7 @@ func (v Gender) Text() string {
 	case GENDER__MALE:
 		return "男"
 	case GENDER__FEMALE:
-		return "女"
+		return "FEMALE"
 	default:
 		return v.String()
 	}
@@ -100,4 +100,28 @@ func (v *Gender) Scan(src any) error {
 	}
 	*v = Gender(i)
 	return nil
+}
+
+// Name describes Name attribute
+func (v Gender) Name() string {
+	switch v {
+	case GENDER__MALE:
+		return "男"
+	case GENDER__FEMALE:
+		return "女"
+	default:
+		return ""
+	}
+}
+
+// Short describes Short attribute
+func (v Gender) Short() string {
+	switch v {
+	case GENDER__MALE:
+		return "M"
+	case GENDER__FEMALE:
+		return "F"
+	default:
+		return ""
+	}
 }

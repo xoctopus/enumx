@@ -53,4 +53,9 @@ func TestScan(t *testing.T) {
 
 func TestParseErrorFor(t *testing.T) {
 	_ = enumx.ParseErrorFor[testdata.Gender]("any")
+	b := []byte("123")
+	s := "123"
+
+	t.Log(reflect.ValueOf(b).Bytes())
+	t.Log(reflect.ValueOf(s).String())
 }
