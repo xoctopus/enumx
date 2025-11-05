@@ -28,6 +28,7 @@ type Enum struct {
 	unknown *pkgx.Constant
 	values  []*option
 	attrs   map[string]struct{}
+	storage string
 }
 
 func (e *Enum) IsValid() bool {
@@ -198,11 +199,27 @@ func NewEnums(g genx.Context) *Enums {
 		}
 
 		if _, ok := es.e[typ]; !ok {
-			es.e[typ] = &Enum{
+			v := &Enum{
 				typ:    typ,
 				key:    elem.TypeName(),
 				values: make([]*option, 0),
 				attrs:  make(map[string]struct{}),
+			}
+			es.e[typ] = v
+
+			x := es.p.TypeNames().ElementByName(elem.TypeName())
+			for _, doc := range x.Doc().Desc() {
+				if !strings.HasPrefix(doc, "@def ") {
+					continue
+				}
+				def := strings.TrimPrefix(doc, "@def ")
+				kvs := strings.SplitN(def, "=", 2)
+				if len(kvs) == 2 {
+					switch kvs[0] {
+					case "storage":
+						v.storage = strings.ToLower(kvs[1])
+					}
+				}
 			}
 		}
 		es.e[typ].add(elem)

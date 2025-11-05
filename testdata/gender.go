@@ -2,6 +2,7 @@ package testdata
 
 // Gender
 // +genx:enum
+// @def storage=text
 type Gender int8
 
 const (

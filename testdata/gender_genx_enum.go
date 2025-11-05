@@ -79,29 +79,6 @@ func (v *Gender) UnmarshalText(data []byte) error {
 	return nil
 }
 
-// Value implements driver.Valuer
-func (v Gender) Value() (driver.Value, error) {
-	offset := 0
-	if drv, ok := any(v).(enumx.DriverValueOffset); ok {
-		offset = drv.Offset()
-	}
-	return int64(v) + int64(offset), nil
-}
-
-// Scan implements sql.Scanner
-func (v *Gender) Scan(src any) error {
-	offset := 0
-	if offsetter, ok := any(v).(enumx.DriverValueOffset); ok {
-		offset = offsetter.Offset()
-	}
-	i, err := enumx.Scan(src, offset)
-	if err != nil {
-		return err
-	}
-	*v = Gender(i)
-	return nil
-}
-
 // Name describes Name attribute
 func (v Gender) Name() string {
 	switch v {
@@ -124,4 +101,23 @@ func (v Gender) Short() string {
 	default:
 		return ""
 	}
+}
+
+// Value implements driver.Valuer
+func (v Gender) Value() (driver.Value, error) {
+	return v.String(), nil
+}
+
+// Scan implements sql.Scanner
+func (v *Gender) Scan(src any) error {
+	var data []byte
+	switch x := src.(type) {
+	case string:
+		data = []byte(x)
+	case []byte:
+		data = x
+	default:
+		return fmt.Errorf("cannot scan %T value from `%T`", v, x)
+	}
+	return v.UnmarshalText(data)
 }

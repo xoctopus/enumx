@@ -13,8 +13,14 @@ import (
 	"github.com/xoctopus/enumx/pkg/enumx"
 )
 
-//go:embed enumx.go.tpl
-var template []byte
+var (
+	//go:embed enumx.go.tpl
+	template []byte
+	//go:embed enumx.go_int.tpl
+	templateInt []byte // template for int storage driver.Valuer/sql.Scanner
+	//go:embed enumx.go_txt.tpl
+	templateTxt []byte // template for text/varchar storage driver.Valuer/sql.Scanner
+)
 
 func init() {
 	genx.Register(&g{})
@@ -53,6 +59,8 @@ func (x *g) generate(c genx.Context, e *Enum) {
 		s.ArgExpose(ctx, "bytes", "ToUpper"),
 		// @def fmt.Sprintf
 		s.ArgExpose(ctx, "fmt", "Sprintf"),
+		// @def fmt.Errorf
+		s.ArgExpose(ctx, "fmt", "Errorf"),
 		// @def fmt.Sscanf
 		s.ArgExpose(ctx, "fmt", "Sscanf"),
 		// @def EnumerationType github.com/xoctopus/enumx/pkg.Enum[Type]
@@ -80,12 +88,19 @@ func (x *g) generate(c genx.Context, e *Enum) {
 		// @def ValueToNameCases
 		s.Arg(ctx, "ValueToStringCases", e.ValueToStringCases(ctx)),
 	}
-	ss := []s.Snippet{s.Template(bytes.NewReader(template), args...)}
 
+	ss := []s.Snippet{s.Template(bytes.NewReader(template), args...)}
 	for _, attr := range e.Attrs() {
 		if v := strings.ToLower(attr); v != "text" && v != "string" {
 			ss = append(ss, e.Attr(ctx, attr))
 		}
+	}
+
+	switch e.storage {
+	case "text", "string", "varchar":
+		ss = append(ss, s.Template(bytes.NewReader(templateTxt), args...))
+	default:
+		ss = append(ss, s.Template(bytes.NewReader(templateInt), args...))
 	}
 
 	c.Render(s.Snippets(s.NewLine(1), ss...))
