@@ -4,11 +4,11 @@
 --Value
 // Value implements driver.Valuer
 func (v #Type#) Value() (#database/sql/driver.Value#, error) {
-offset := 0
-if drv, ok := any(v).(#github.com/xoctopus/enumx/pkg/enumx.DriverValueOffset#); ok {
-offset = drv.Offset()
-}
-return int64(v) + int64(offset), nil
+	offset := 0
+	if drv, ok := any(v).(#github.com/xoctopus/enumx/pkg/enumx.DriverValueOffset#); ok {
+		offset = drv.Offset()
+	}
+	return int64(v) + int64(offset), nil
 }
 
 @def Type
@@ -17,14 +17,14 @@ return int64(v) + int64(offset), nil
 --Scan
 // Scan implements sql.Scanner
 func (v *#Type#) Scan(src any) error {
-offset := 0
-if offsetter, ok := any(v).(#github.com/xoctopus/enumx/pkg/enumx.DriverValueOffset#); ok {
-offset = offsetter.Offset()
-}
-i, err := #github.com/xoctopus/enumx/pkg/enumx.Scan#(src, offset)
-if err != nil {
-return err
-}
-*v = #Type#(i)
-return nil
+	offset := 0
+	if offsetter, ok := any(v).(#github.com/xoctopus/enumx/pkg/enumx.DriverValueOffset#); ok {
+		offset = offsetter.Offset()
+	}
+	i, err := #github.com/xoctopus/enumx/pkg/enumx.Scan#(src, offset)
+	if err != nil {
+		return err
+	}
+	*v = #Type#(i)
+	return nil
 }
