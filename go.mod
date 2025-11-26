@@ -14,7 +14,7 @@ require (
 
 require (
 	github.com/google/go-cmp v0.7.0 // indirect
-	github.com/xoctopus/errx v0.0.0-20251119064822-0543182caf80 // indirect
+	github.com/xoctopus/errx v0.0.0-20251126100440-d8ed5b465902 // indirect
 	github.com/xoctopus/typex v0.2.2-0.20251126093658-0b77b696a6a8 // indirect
 	golang.org/x/mod v0.30.0 // indirect
 	golang.org/x/sync v0.18.0 // indirect

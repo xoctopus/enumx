@@ -63,7 +63,7 @@ func (x *g) generate(c genx.Context, e *Enum) {
 		s.ArgExpose(ctx, "fmt", "Errorf"),
 		// @def fmt.Sscanf
 		s.ArgExpose(ctx, "fmt", "Sscanf"),
-		// @def EnumerationType github.com/xoctopus/enumx/pkg.Enum[Type]
+		// @def EnumerationType github.com/xoctopus/enumx/pkg/enumx.Enum[Type]
 		s.ArgExpose(ctx, pkgid, "Enum", ident).WithName("EnumerationType"),
 		// @def github.com/xoctopus/enumx/pkg.Scan
 		s.ArgExpose(ctx, pkgid, "Scan"),
@@ -92,7 +92,7 @@ func (x *g) generate(c genx.Context, e *Enum) {
 	ss := []s.Snippet{s.Template(bytes.NewReader(template), args...)}
 	for _, attr := range e.Attrs() {
 		if v := strings.ToLower(attr); v != "text" && v != "string" {
-			ss = append(ss, e.Attr(ctx, attr))
+			ss = append(ss, e.Attr(ctx, attr, e.options[v]))
 		}
 	}
 

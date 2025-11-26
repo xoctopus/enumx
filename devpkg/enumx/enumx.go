@@ -28,6 +28,7 @@ type Enum struct {
 	unknown *pkgx.Constant
 	values  []*option
 	attrs   map[string]struct{}
+	options map[string]string
 	storage string
 }
 
@@ -144,7 +145,23 @@ func (e *Enum) ValueToTextCases(ctx context.Context) s.Snippet {
 	return s.Snippets(s.NewLine(1), ss...)
 }
 
-func (e *Enum) Attr(ctx context.Context, attr string) s.Snippet {
+func (e *Enum) Attr(ctx context.Context, attr, option string) s.Snippet {
+	f := func(v string) s.Snippet {
+		switch option {
+		case "string", "text", "":
+			return s.BlockF("return %q", v)
+		default:
+			if len(v) == 0 {
+				return s.BlockF("return *new(%s)", option)
+			}
+			return s.BlockF("return %s(%s)", option, v)
+		}
+	}
+
+	if option == "" {
+		option = "string"
+	}
+
 	ss := make([]s.Snippet, 0)
 
 	name := stringsx.UpperCamelCase(attr)
@@ -152,7 +169,7 @@ func (e *Enum) Attr(ctx context.Context, attr string) s.Snippet {
 	ss = append(
 		ss,
 		s.Comments(fmt.Sprintf("%s describes %s attribute", name, name)),
-		s.Compose(s.Block("func (v "), s.IdentTT(ctx, e.typ), s.BlockF(") %s() string {", name)),
+		s.Compose(s.Block("func (v "), s.IdentTT(ctx, e.typ), s.BlockF(") %s() %s {", name, option)),
 		s.Compose(s.Indent(1), s.Block("switch v {")),
 	)
 
@@ -161,14 +178,14 @@ func (e *Enum) Attr(ctx context.Context, attr string) s.Snippet {
 		ss = append(
 			ss,
 			s.Compose(s.Indent(1), s.Block("case "), expose, s.Block(":")),
-			s.Compose(s.Indent(2), s.BlockF("return %q", v.attrs[attr])),
+			s.Compose(s.Indent(2), f(v.attrs[attr])),
 		)
 	}
 
 	ss = append(
 		ss,
 		s.Compose(s.Indent(1), s.Block("default:")),
-		s.Compose(s.Indent(2), s.BlockF("return %q", "")),
+		s.Compose(s.Indent(2), f("")),
 		s.Compose(s.Indent(1), s.Block("}")),
 		s.Compose(s.Block("}\n")),
 	)
@@ -200,10 +217,11 @@ func NewEnums(g genx.Context) *Enums {
 
 		if _, ok := es.e[typ]; !ok {
 			v := &Enum{
-				typ:    typ,
-				key:    elem.TypeName(),
-				values: make([]*option, 0),
-				attrs:  make(map[string]struct{}),
+				typ:     typ,
+				key:     elem.TypeName(),
+				values:  make([]*option, 0),
+				attrs:   make(map[string]struct{}),
+				options: make(map[string]string),
 			}
 			es.e[typ] = v
 
@@ -218,6 +236,15 @@ func NewEnums(g genx.Context) *Enums {
 					switch kvs[0] {
 					case "storage":
 						v.storage = strings.ToLower(kvs[1])
+					default:
+						if strings.HasPrefix(kvs[0], "attr.") {
+							attr := strings.TrimPrefix(kvs[0], "attr.")
+							if len(attr) > 0 {
+								if opt := strings.TrimSpace(kvs[1]); len(opt) > 0 {
+									v.options[attr] = opt
+								}
+							}
+						}
 					}
 				}
 			}
