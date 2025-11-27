@@ -92,7 +92,7 @@ func (x *g) generate(c genx.Context, e *Enum) {
 	ss := []s.Snippet{s.Template(bytes.NewReader(template), args...)}
 	for _, attr := range e.Attrs() {
 		if v := strings.ToLower(attr); v != "text" && v != "string" {
-			ss = append(ss, e.Attr(ctx, attr, e.options[v]))
+			ss = append(ss, e.Attr(ctx, attr, e.options[attr]))
 		}
 	}
 

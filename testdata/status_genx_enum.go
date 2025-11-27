@@ -83,9 +83,9 @@ func (v *Status) UnmarshalText(data []byte) error {
 func (v Status) Gender() Gender {
 	switch v {
 	case STATUS__ENABLED:
-		return Gender(GENDER__MALE)
+		return Gender(1)
 	case STATUS__DISABLED:
-		return Gender(GENDER__FEMALE)
+		return Gender(2)
 	default:
 		return *new(Gender)
 	}
